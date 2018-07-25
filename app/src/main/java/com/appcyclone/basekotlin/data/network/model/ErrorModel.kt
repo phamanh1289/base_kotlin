@@ -11,10 +11,8 @@ import okhttp3.Response
  */
 class ErrorModel {
 
-    @SerializedName("message")
     var message: String? = null
         get() = if (TextUtils.isEmpty(field)) "Error from server, Please try again!" else field
-    @SerializedName("code")
     var code = -1
 
     override fun toString(): String {
@@ -41,12 +39,7 @@ class ErrorModel {
         fun getErrorString(response: Response): String {
             val errorModel = ErrorModel()
             errorModel.code = response.code()
-            val body = response.body()!!.toString()
-            if (!body.startsWith("<!DOCTYPE HTML")) {
-                errorModel.message = body
-            } else {
-                errorModel.message = ""
-            }
+            errorModel.message = if (!response.body()!!.toString().startsWith("<!DOCTYPE HTML")) response.body()!!.toString() else ""
             return errorModel.toString()
         }
     }

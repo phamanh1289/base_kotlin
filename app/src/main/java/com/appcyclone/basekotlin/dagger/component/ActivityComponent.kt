@@ -7,7 +7,8 @@ import com.appcyclone.basekotlin.ui.main.MainActivity
 import dagger.Subcomponent
 
 /**
- * Created by sunil on 5/30/2017.
+ * * Created by Anh Pham on 07/10/2018.     **
+ * * Copyright (c) 2018 by AppsCyclone      **
  */
 @ActivityScope
 @Subcomponent(modules = [(ActivityModule::class)])

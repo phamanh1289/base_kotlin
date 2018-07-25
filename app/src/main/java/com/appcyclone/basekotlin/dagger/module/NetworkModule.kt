@@ -7,6 +7,7 @@ import com.appcyclone.basekotlin.dagger.scope.AppScope
 import com.appcyclone.basekotlin.data.network.api.AlbumApi
 import com.appcyclone.basekotlin.data.network.api.PostApi
 import com.appcyclone.basekotlin.data.network.model.ErrorModel
+import com.appcyclone.basekotlin.others.constant.Constants
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
@@ -30,7 +31,7 @@ import java.util.concurrent.TimeUnit
 @Module
 @AppScope
 class NetworkModule(private val mType: ApiConfigType) {
-    private val DISK_CACHE_SIZE = (50 * 1024 * 1024).toLong() // 50MB
+    private val DISK_CACHE_SIZE = (50 * 1024 * 1024).toLong()
 
     @Provides
     fun provideOkHttpClient(app: Application): OkHttpClient {
@@ -50,7 +51,7 @@ class NetworkModule(private val mType: ApiConfigType) {
                 .readTimeout(4, TimeUnit.MINUTES)
                 .writeTimeout(4, TimeUnit.MINUTES)
                 .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-        httpClient.addInterceptor(ApiCustomInterceptor())
+                .addInterceptor(ApiCustomInterceptor())
         return Retrofit.Builder()
                 .baseUrl(ApiConfig.createConnectionDetail(mType).baseURL.toString())
                 .client(httpClient.build())
@@ -69,19 +70,19 @@ class NetworkModule(private val mType: ApiConfigType) {
                 throw IOException(ErrorModel.getErrorString(response))
             }
             val stringResponse: String = response.body()!!.string()
-            var newString = ""
             try {
-                if (stringResponse.startsWith("["))
-                    newString = stringResponse
-                else {
-                    val root = JSONObject(stringResponse.trim())
-                    if (root.has("error"))
-                        throw IOException(root.getString("error"))
-                    newString = if (root.has("data")) root.opt("data").toString() else stringResponse
-                }
+                val newResponse =
+                        if (stringResponse.startsWith("["))
+                            stringResponse
+                        else {
+                            val rootJson = JSONObject(stringResponse.trim())
+                            if (rootJson.has(Constants.ERROR_DATA))
+                                throw IOException(rootJson.getString(Constants.ERROR_DATA))
+                            if (rootJson.has(Constants.DATA_JSON)) rootJson.opt(Constants.DATA_JSON).toString() else stringResponse
+                        }
                 return response.newBuilder()
-                        .message("Successful")
-                        .body(ResponseBody.create(response.body()!!.contentType(), newString))
+                        .message(Constants.SUCCESSFUL)
+                        .body(ResponseBody.create(response.body()!!.contentType(), newResponse))
                         .build()
             } catch (e: Exception) {
                 throw IOException(e.message)

@@ -10,7 +10,6 @@ import io.reactivex.disposables.Disposable
 open class BasePresenter<V : BaseView> : IPresenter<V> {
 
     var view: V? = null
-        private set
     private val compositeDisposable: CompositeDisposable?
 
     override val isViewAttach: Boolean

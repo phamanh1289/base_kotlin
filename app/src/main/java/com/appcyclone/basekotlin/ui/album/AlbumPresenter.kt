@@ -14,7 +14,6 @@ import javax.inject.Inject
  */
 class AlbumPresenter @Inject constructor(val albumApi: AlbumApi) : BasePresenter<AlbumContract.AlbumView>(), AlbumContract.AlbumPresenter {
 
-
     override fun getAllAlbum() {
         addSubscribe(albumApi.getAlbumList()
                 .subscribeOn(Schedulers.io())

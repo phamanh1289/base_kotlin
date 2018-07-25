@@ -6,7 +6,8 @@ import dagger.Module
 import dagger.Provides
 
 /**
- * Created by sunil on 5/30/2017.
+ * * Created by Anh Pham on 07/10/2018.     **
+ * * Copyright (c) 2018 by AppsCyclone      **
  */
 @ActivityScope
 @Module

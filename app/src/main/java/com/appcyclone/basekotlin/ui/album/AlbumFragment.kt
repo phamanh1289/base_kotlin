@@ -54,7 +54,6 @@ class AlbumFragment : BaseFragment(), AlbumContract.AlbumView {
         presenter.getAllAlbum()
         showLoading()
         Toast.makeText(context, getSharePreferences().deviceToken, Toast.LENGTH_SHORT).show()
-
     }
 
     override fun onDestroyView() {

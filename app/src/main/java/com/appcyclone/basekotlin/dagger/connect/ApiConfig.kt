@@ -6,23 +6,21 @@ package com.appcyclone.basekotlin.dagger.connect
  */
 object ApiConfig {
     fun createConnectionDetail(typeApi: ApiConfigType?): ApiConfigDetail {
-        var type = typeApi
-        val connection = ApiConfigDetail()
-        if (type == null) {
-            type = ApiConfigType.DEVELOP
-        }
+        var type = typeApi ?: ApiConfigType.DEVELOP
+        var url = ""
+        var apiKey = ""
         when (type) {
-            ApiConfigType.DEVELOP -> connection.baseURL = "https://jsonplaceholder.typicode.com/"
-            ApiConfigType.STAGING -> connection.baseURL = "http://windhost.esy.es/"
+            ApiConfigType.DEVELOP -> url = "https://jsonplaceholder.typicode.com/"
+            ApiConfigType.STAGING -> url = "url staging"
             ApiConfigType.PRELIVE -> {
-                connection.baseURL = "https://prelive.fxchange.rmlbs.co/api/v1/"
-                connection.setmApiKey("DEVACCRMLEXCHANGE03052017")
+                url = "url"
+                apiKey = "key"
             }
             ApiConfigType.LIVE -> {
-                connection.baseURL = "https://live.fxchange.sg/api/v1/"
-                connection.setmApiKey("LIVEACCRMLEXCHANGE03032017")
+                url = "url"
+                apiKey = "key"
             }
         }
-        return connection
+        return ApiConfigDetail(baseURL = url, apiKey = apiKey)
     }
 }

@@ -1,11 +1,13 @@
 package com.appcyclone.basekotlin.ui.base
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.appcyclone.basekotlin.R
 import com.appcyclone.basekotlin.dagger.component.ActivityComponent
 import com.appcyclone.basekotlin.data.local.CustomTransaction
 import com.appcyclone.basekotlin.others.dialog.LoadingDialog
+import com.appcyclone.basekotlin.ui.main.MainActivity
 import com.appcyclone.basekotlin.utils.AppUtils
 import com.appcyclone.basekotlin.utils.SharedPrefUtils
 
@@ -16,7 +18,7 @@ import com.appcyclone.basekotlin.utils.SharedPrefUtils
 open class BaseActivity : AppCompatActivity(), BaseView {
 
     private lateinit var mActivityComponent: ActivityComponent
-    private lateinit var sharePreferences : SharedPrefUtils
+    private lateinit var sharePreferences: SharedPrefUtils
     private var mDialogView: LoadingDialog? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +26,7 @@ open class BaseActivity : AppCompatActivity(), BaseView {
         sharePreferences = SharedPrefUtils(this)
     }
 
-    fun getSharePreferences():SharedPrefUtils{
+    fun getSharePreferences(): SharedPrefUtils {
         return sharePreferences
     }
 
@@ -57,34 +59,44 @@ open class BaseActivity : AppCompatActivity(), BaseView {
         addReplaceFragment(CustomTransaction(isAnimation = isAnimation), fragment, true, isAddToBackStack)
     }
 
+    @SuppressLint("CommitTransaction")
     private fun addReplaceFragment(customTransaction: CustomTransaction, fragment: BaseFragment?, isReplace: Boolean, isAddToBackStack: Boolean) {
+
+        fun getCurrentViewID(view: Int): Int {
+            return when {
+                view != 0 -> view
+                this is MainActivity -> android.R.id.tabcontent
+                else -> R.id.frmContainer
+            }
+        }
+
         val fragmentManager = supportFragmentManager
-        if (fragmentManager != null && fragment != null) {
-            val fragmentTransaction = fragmentManager.beginTransaction()
+        val fragmentTransaction = fragmentManager?.beginTransaction()
+        fragmentTransaction?.let { it ->
             if (customTransaction.isAnimation)
-                fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
+                it.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left,
+                        R.anim.enter_from_left, R.anim.exit_to_right)
             if (isReplace)
-//                fragmentTransaction.replace(if (customTransaction.containerViewId !== 0) customTransaction.containerViewId else if (this is MainActivity) android.R.id.tabcontent else R.id.frmContainer, fragment)
-                fragmentTransaction.replace(R.id.frmContainer, fragment)
+                it.replace(getCurrentViewID(customTransaction.containerViewId), fragment)
             else {
-                val currentFragment = supportFragmentManager.findFragmentById(R.id.frmContainer)
-                if (currentFragment != null) {
-                    fragmentTransaction.hide(currentFragment)
-                }
-                fragmentTransaction.add(R.id.frmContainer, fragment, fragment::class.java.simpleName)
+                val currentFragment = supportFragmentManager.findFragmentById(getCurrentViewID(customTransaction.containerViewId))
+                currentFragment?.let { current -> it.hide(current) }
+                it.add(getCurrentViewID(customTransaction.containerViewId), fragment, fragment!!::class.java.simpleName)
             }
-            if (isAddToBackStack) {
-                fragmentTransaction.addToBackStack(fragment::class.java.simpleName)
-            }
-            fragmentTransaction.commit()
+            if (isAddToBackStack)
+                it.addToBackStack(fragment!!::class.java.simpleName)
+            it.commit()
         }
     }
 
+
     fun clearAllBackStack() {
         val fm = supportFragmentManager
-        val count = fm.backStackEntryCount
-        for (i in 0 until count) {
-            fm.popBackStack()
+        val count = fm?.backStackEntryCount
+        count?.let {
+            for (i in 0 until it) {
+                fm.popBackStack()
+            }
         }
     }
 }

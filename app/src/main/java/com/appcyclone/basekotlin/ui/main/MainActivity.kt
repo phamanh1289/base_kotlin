@@ -10,8 +10,11 @@ import com.appcyclone.basekotlin.utils.SharedPrefUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
+/**
+ * * Created by Anh Pham on 07/10/2018.     **
+ * * Copyright (c) 2018 by AppsCyclone      **
+ */
 class MainActivity : BaseActivity(), MainContract.MainView {
-
 
     @Inject
     lateinit var presenter: MainPresenterImp
@@ -23,7 +26,6 @@ class MainActivity : BaseActivity(), MainContract.MainView {
         presenter.onAttach(this)
         tvClick.setOnClickListener { presenter.getListStories() }
         tvAddFragment.setOnClickListener { addFragment(AlbumFragment(), true, true) }
-        getSharePreferences().deviceToken = "Hello"
     }
 
     override fun onDestroy() {
@@ -34,4 +36,5 @@ class MainActivity : BaseActivity(), MainContract.MainView {
     override fun loadListPost(list: List<PostModel>) {
         Toast.makeText(this, list.toString(), Toast.LENGTH_SHORT).show()
     }
+    
 }
