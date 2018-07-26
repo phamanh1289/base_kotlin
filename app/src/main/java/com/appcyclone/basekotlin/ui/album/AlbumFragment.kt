@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.appcyclone.basekotlin.R
 import com.appcyclone.basekotlin.data.network.model.AlbumModel
+import com.appcyclone.basekotlin.others.constant.Constants
 import com.appcyclone.basekotlin.ui.base.BaseFragment
 import kotlinx.android.synthetic.main.fragment_album.*
 import javax.inject.Inject
@@ -20,22 +21,20 @@ class AlbumFragment : BaseFragment(), AlbumContract.AlbumView {
 
     @Inject
     lateinit var presenter: AlbumPresenter
+    private var indexDelete = 0
     private val adapterAlbum = AlbumAdapter(
             onClick = { it ->
                 Toast.makeText(context, mData[it].title, Toast.LENGTH_SHORT).show()
             },
             onDelete = {
-                onDelete(it)
+                showLoading()
+                indexDelete = it
+                presenter.deleteAlbum(mData[it])
             })
     private var mData: MutableList<AlbumModel> = ArrayList()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_album, container, false)
-    }
-
-    fun onDelete(index: Int) {
-        mData.removeAt(index)
-       adapterAlbum.notifyItemRemoved(index)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -51,9 +50,9 @@ class AlbumFragment : BaseFragment(), AlbumContract.AlbumView {
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
         }
-        presenter.getAllAlbum()
         showLoading()
-        Toast.makeText(context, getSharePreferences().deviceToken, Toast.LENGTH_SHORT).show()
+        presenter.getDataAlbum()
+//        Toast.makeText(context, getSharePreferences().deviceToken, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {
@@ -64,6 +63,17 @@ class AlbumFragment : BaseFragment(), AlbumContract.AlbumView {
     override fun loadAllAlbum(list: MutableList<AlbumModel>) {
         mData = list
         adapterAlbum.submitList(mData)
+        hideLoading()
+    }
+
+    override fun handleError() {
+        Toast.makeText(context, Constants.ERROR_DATA, Toast.LENGTH_SHORT).show()
+        hideLoading()
+    }
+
+    override fun loadAfterDeleteAlbum() {
+        mData.removeAt(indexDelete)
+        adapterAlbum.notifyItemRemoved(indexDelete)
         hideLoading()
     }
 }

@@ -6,6 +6,8 @@ import com.appcyclone.basekotlin.dagger.component.DaggerApplicationComponent
 import com.appcyclone.basekotlin.dagger.connect.ApiConfigType
 import com.appcyclone.basekotlin.dagger.module.ApplicationModule
 import com.appcyclone.basekotlin.dagger.module.NetworkModule
+import io.realm.Realm
+import io.realm.RealmConfiguration
 
 /**
  * * Created by Anh Pham on 07/10/2018.     **
@@ -22,6 +24,8 @@ class BaseApplication : Application() {
         super.onCreate()
         instance = this
         setupInjector()
+        Realm.init(this)
+        Realm.setDefaultConfiguration(RealmConfiguration.Builder().build())
     }
 
 

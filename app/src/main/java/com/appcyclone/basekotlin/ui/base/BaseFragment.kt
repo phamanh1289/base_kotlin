@@ -3,6 +3,7 @@ package com.appcyclone.basekotlin.ui.base
 import android.support.v4.app.Fragment
 import com.appcyclone.basekotlin.dagger.component.ActivityComponent
 import com.appcyclone.basekotlin.utils.SharedPrefUtils
+import io.realm.Realm
 
 /**
  * * Created by Anh Pham on 07/10/2018.     **
@@ -50,4 +51,5 @@ open class BaseFragment : Fragment(), BaseView {
             (activity as BaseActivity).clearAllBackStack()
         }
     }
+
 }

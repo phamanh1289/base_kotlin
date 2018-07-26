@@ -4,70 +4,77 @@ import com.appcyclone.basekotlin.data.network.model.AlbumModel
 import io.reactivex.Observable
 import io.realm.Realm
 
-open class RealmAlbumPresenter : RealmAlbumContract {
+open class RealmAlbumManager : RealmAlbumSource {
 
     private var realm: Realm? = null
 
     override fun readAlbum(): Observable<MutableList<AlbumModel>> {
         val list: MutableList<AlbumModel> = ArrayList()
-
         try {
+            realm = Realm.getDefaultInstance()
             realm?.executeTransaction {
                 realm?.where(AlbumRealmModel::class.java)?.findAllAsync()?.map {
                     list.add(AlbumModel(id = it.id, userId = it.userId, title = it.title))
                 }
             }
-            realm?.close()
         } finally {
-            realm?.cancelTransaction()
+            realm?.close()
         }
         return Observable.just(list)
     }
 
-    override fun writeAlbum(mode: AlbumModel) {
-        realm = Realm.getDefaultInstance()
+    override fun insertOrUpdateAlbum(mode: AlbumModel) {
         try {
+            realm = Realm.getDefaultInstance()
             realm?.executeTransaction {
                 val item = realm?.createObject(AlbumRealmModel::class.java)
                 item?.id = mode.id
                 item?.title = mode.title
                 item?.userId = mode.userId
-                realm?.insert(item)
+                realm?.insertOrUpdate(item!!)
             }
-            realm?.close()
         } finally {
-            realm?.cancelTransaction()
+            realm?.close()
         }
     }
 
     override fun findId(id: Int): Observable<AlbumRealmModel?> {
-        realm = Realm.getDefaultInstance()
-        var obserableAlbum: AlbumRealmModel? = null
         try {
+            realm = Realm.getDefaultInstance()
+            var obserableAlbum: AlbumRealmModel? = null
             realm?.executeTransaction {
                 obserableAlbum = realm?.where(AlbumRealmModel::class.java)?.equalTo("id", id)?.findFirst()
             }
-            realm?.close()
             return Observable.just(obserableAlbum)
         } finally {
-            realm?.cancelTransaction()
+            realm?.close()
         }
     }
 
-//    override fun deleteAlbum(id: Int): Observable<Boolean> {
-//
-//    }
+    override fun deleteAlbum(model: AlbumModel): Observable<Boolean> {
+        try {
+            var isCheck = false
+            realm = Realm.getDefaultInstance()
+            realm?.executeTransaction {
+                val result = realm?.where(AlbumRealmModel::class.java)?.equalTo("id", model.id)?.findAll()
+                isCheck = result?.size != 0
+                if (isCheck) result?.deleteAllFromRealm()
+            }
+            return Observable.just(isCheck)
+        } finally {
+            realm?.close()
+        }
+    }
 
     fun getItemCount(): Int {
         var count: Int? = 0
-        realm = Realm.getDefaultInstance()
         try {
+            realm = Realm.getDefaultInstance()
             realm?.executeTransaction {
                 count = realm?.where(AlbumRealmModel::class.java)?.findAll()?.size
             }
-            realm?.close()
         } finally {
-            realm?.cancelTransaction()
+            realm?.close()
         }
         return count ?: 0
     }

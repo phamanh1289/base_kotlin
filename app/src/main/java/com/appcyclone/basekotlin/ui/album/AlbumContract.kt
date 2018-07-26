@@ -10,9 +10,13 @@ import com.appcyclone.basekotlin.ui.base.BaseView
 interface AlbumContract {
     interface AlbumView : BaseView {
         fun loadAllAlbum(list: MutableList<AlbumModel>)
+        fun loadAfterDeleteAlbum()
+        fun handleError()
     }
 
     interface AlbumPresenter {
         fun getAllAlbum()
+        fun getAllAlbumDB()
+        fun deleteAlbum(model: AlbumModel)
     }
 }

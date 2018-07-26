@@ -1,5 +1,6 @@
 package com.appcyclone.basekotlin.data.network.model
 
+import io.realm.RealmObject
 import java.io.Serializable
 
 /**

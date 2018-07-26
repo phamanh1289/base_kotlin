@@ -8,6 +8,4 @@ object Constants {
     val ERROR_DATA = "error"
     val DATA_JSON = "data"
     val SUCCESSFUL = "Successful"
-    val DB_VERSION = 1
-    val DB_NAME = "dbFriends"
 }

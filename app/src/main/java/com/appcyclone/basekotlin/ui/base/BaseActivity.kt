@@ -11,6 +11,7 @@ import com.appcyclone.basekotlin.ui.main.MainActivity
 import com.appcyclone.basekotlin.utils.AppUtils
 import com.appcyclone.basekotlin.utils.SharedPrefUtils
 
+
 /**
  * * Created by Anh Pham on 07/10/2018.     **
  * * Copyright (c) 2018 by AppsCyclone      **
@@ -20,6 +21,7 @@ open class BaseActivity : AppCompatActivity(), BaseView {
     private lateinit var mActivityComponent: ActivityComponent
     private lateinit var sharePreferences: SharedPrefUtils
     private var mDialogView: LoadingDialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mActivityComponent = BaseApplication.instance.getApplicationComponent().getActivityComponent()
